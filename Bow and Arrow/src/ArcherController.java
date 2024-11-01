@@ -11,14 +11,20 @@ public class ArcherController {
         this.gameInputProcessor = new GameInputProcessor();
     }
 
-    public void update() {
-        if (gameInputProcessor.getKeyUpPressed()) {
-            archer.setY(archer.getY() + 10);
+    public void draw(SpriteBatch batch) {
+        archer.draw(batch);
+    }
+
+    public void update(SpriteBatch batch) {
+        if (gameInputProcessor.getKeyUpPressed() && this.getY()+this.getHeight()<Gdx.graphics.getHeight()) {
+            this.setY(this.getY() + 3);
         }
 
-        if (gameInputProcessor.getKeyDownPressed()) {
-            archer.setY(archer.getY() - 10);
+        if (gameInputProcessor.getKeyDownPressed() && this.getY()>0) {
+            this.setY(this.getY() - 3);
         }
+
+        this.draw(batch);
     }
 
     public InputProcessor getInputProcessor() {
