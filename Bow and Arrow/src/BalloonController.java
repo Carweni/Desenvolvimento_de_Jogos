@@ -1,21 +1,27 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import java.util.ArrayList;
 
 public class BalloonController {
-    private ArrayList<Balloon> balloons;
+    private final ArrayList<Balloon> ActiveBalloons;
 
-    public BalloonController(){
-        balloons = new ArrayList<>();
+    BalloonController() {
+        ActiveBalloons = new ArrayList<>();
     }
 
-    public void addBalloon(Balloon b){
-        balloons.add(b);
+    public void addBalloon(int x, int y, Texture balloonTexture){
+        ActiveBalloons.add(new Balloon(x, y, balloonTexture));
     }
 
-    public Balloon getNextBalloon(){
-        Balloon b = balloons.get(0);
-        balloons.remove(b);
-        return b;
+    public void update(SpriteBatch batch){
+        if(!ActiveBalloons.isEmpty()) {
+            for (Balloon balloon : ActiveBalloons) {
+                balloon.update(batch);
+            }
+        }
     }
 }
