@@ -9,10 +9,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
 	int screenHeight, screenWidth;
 	float balloonTime;
-	Texture archerTexture, balloonTexture, arrowTexture, backgroundTexture;
+	Texture archerIdleTexture, archerShootingTexture, balloonTexture, arrowTexture, backgroundTexture;
 	Archer archer;
 	BalloonController balloonController;
-	ArrowController arrowController;  
+	ArrowController arrowController;
 
 	@Override
 	public void create() {
@@ -21,14 +21,21 @@ public class MyGdxGame extends ApplicationAdapter {
 		screenWidth = Gdx.graphics.getWidth();
 		balloonTime = 0;
 
-		archerTexture = new Texture("archerIdle.png");
+		// Carregar as texturas
+		archerIdleTexture = new Texture("archerIdle.png");
+		archerShootingTexture = new Texture("archerShooting.png");
 		balloonTexture = new Texture("balloon.png");
 		arrowTexture = new Texture("arrow.png");
 		backgroundTexture = new Texture("background.png");
 
-		archer = new Archer(0, 0, archerTexture);
+		archer = new Archer(0, 0, archerIdleTexture, archerShootingTexture);
 		balloonController = new BalloonController(archer);
 		arrowController = new ArrowController(archer);
+
+		InputMultiplexer multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(archer.getInputProcessor());
+		multiplexer.addProcessor(arrowController.getArrowInputProcessor());
+		Gdx.input.setInputProcessor(multiplexer);
 	}
 
 	@Override
@@ -37,7 +44,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.begin();
 
 		batch.draw(backgroundTexture, 0, 0, screenWidth, screenHeight);
-		archer.update(batch);
+		archer.update(batch, arrowController.getArrowKeyDownPressed());
 
 		// Controle de balões
 		balloonTime += Gdx.graphics.getDeltaTime();
@@ -47,9 +54,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		balloonController.update(batch);
 
-		if (archer.getEnterPressed()) {
+		if (arrowController.getEnterPressed()) {
 			arrowController.addArrow(arrowTexture);
-			archer.resetEnter();
+			arrowController.resetEnter();    // Faz com que pare de atirar flechas continuamente enquanto Enter estiver pressionado.
 		}
 
 		arrowController.update(batch);
@@ -60,7 +67,8 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		batch.dispose();
-		archerTexture.dispose();
+		archerIdleTexture.dispose();
+		archerShootingTexture.dispose();
 		arrowTexture.dispose();
 		balloonTexture.dispose();
 		backgroundTexture.dispose();

@@ -12,7 +12,7 @@ public class Balloon extends Sprite implements Pool.Poolable {
     Balloon(float PositionX, float PositionY, Texture Balloon){
         super(Balloon);
         this.setPosition(PositionX, PositionY);
-        setSize(20, 40);
+        setSize(30, 60);
         alive = false;
     }
 

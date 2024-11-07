@@ -8,43 +8,59 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Archer extends Sprite {
     private final ArcherInputProcessor gameInputProcessor;
+    private Texture archerIdleTexture;
+    private Texture archerShootingTexture;
+    private boolean isShooting;
+    private float shootingTimer;  // Adiciona o temporizador
 
-    public Archer(float positionX, float positionY, Texture archer) {
-        super(archer);
+    public Archer(float positionX, float positionY, Texture archerIdleTexture, Texture archerShootingTexture) {
+        super(archerIdleTexture);
         this.gameInputProcessor = new ArcherInputProcessor();
         this.setPosition(positionX, positionY);
         this.setSize(100, 100);
+        this.archerIdleTexture = archerIdleTexture;
+        this.archerShootingTexture = archerShootingTexture;
+        this.isShooting = false;
+        this.shootingTimer = 0;  // Inicializa o temporizador
     }
 
-    public void setArcherTexture(Texture archer) {
-        this.setTexture(archer);
+    public void setArcherTextures(Texture archerIdle, Texture archerShooting) {
+        this.archerIdleTexture = archerIdle;
+        this.archerShootingTexture = archerShooting;
     }
 
     public void draw(SpriteBatch batch) {
         super.draw(batch);
     }
 
-    public void update(SpriteBatch batch) {
+    public void update(SpriteBatch batch, boolean isArrowKeyDownPressed) {
+        if (isArrowKeyDownPressed && !isShooting) {
+            this.setTexture(archerShootingTexture);
+            isShooting = true;
+            shootingTimer = 0.2f;
+        }
+
+        if (isShooting) {
+            shootingTimer -= Gdx.graphics.getDeltaTime();
+            if (shootingTimer <= 0) {
+                this.setTexture(archerIdleTexture);
+                isShooting = false;
+            }
+        }
+
         if (gameInputProcessor.getKeyUpPressed() && this.getY() + this.getHeight() < Gdx.graphics.getHeight()) {
             this.setY(this.getY() + 3);
         }
 
-        if (gameInputProcessor.getKeyDownPressed() && this.getY()>0) {
+        if (gameInputProcessor.getKeyDownPressed() && this.getY() > 0) {
             this.setY(this.getY() - 3);
         }
 
         this.draw(batch);
     }
 
-    public InputProcessor getInputProcessor() {
+    public ArcherInputProcessor getInputProcessor() {
         return gameInputProcessor;
     }
 
-    public boolean getEnterPressed(){
-        return gameInputProcessor.getArrowKeyDownPressed();
-    }
-
-    public void resetEnter(){
-        gameInputProcessor.resetEnterPressed();
-    }
 }

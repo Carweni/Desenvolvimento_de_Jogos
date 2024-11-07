@@ -7,13 +7,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Arrow extends Sprite {
     private float speed = 5;
-    private ArcherInputProcessor arrowInputProcessor;
+    private ArcherInputProcessor arrowInputProcessor;   // Separar e arrumar com o Input Multiplexer.
 
     public Arrow(float positionX, float positionY, Texture arrowTexture, Archer archer) {
         super(arrowTexture);
         this.setPosition(positionX, positionY);
         this.setSize(30, 50);
-        this.arrowInputProcessor = (ArcherInputProcessor) archer.getInputProcessor();
+        this.arrowInputProcessor = archer.getInputProcessor();
     }
 
     public void draw(SpriteBatch batch) {
@@ -21,10 +21,10 @@ public class Arrow extends Sprite {
     }
 
     public boolean isOutOfScreen (){
-        if((getY()> Gdx.graphics.getHeight())&&(getY()+getHeight()<0)){
+        if((getY() > Gdx.graphics.getHeight())&&(getY()+getHeight()<0)){
             return true;
         }
-        if((getX()>Gdx.graphics.getWidth())&&(getX()+getWidth()<0)){
+        if((getX() > Gdx.graphics.getWidth())&&(getX()+getWidth()<0)){
             return true;
         }
         return false;

@@ -1,55 +1,32 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-public class ArcherInputProcessor implements InputProcessor {
-    public boolean isKeyUpPressed = false;
-    public boolean isKeyDownPressed = false;
-    // private boolean isArrowKeyDownPressed = false;
+public class ArrowInputProcessor implements InputProcessor {
+    private boolean isArrowKeyDownPressed = false;
 
-    ArcherInputProcessor(){
-        Gdx.input.setInputProcessor(this);
-    }
-
-    public boolean getKeyUpPressed() {
-        return isKeyUpPressed;
-    }
-
-    public boolean getKeyDownPressed() {
-        return isKeyDownPressed;
-    }
-
-    /*public boolean getArrowKeyDownPressed(){
+    public boolean getEnterPressed() {
         return isArrowKeyDownPressed;
     }
 
     public void resetEnterPressed(){
         this.isArrowKeyDownPressed = false;
-    }*/
+    }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.W) {
-            this.isKeyUpPressed = true;
-        } else if (keycode == Input.Keys.S) {
-            this.isKeyDownPressed = true;
-        } else if (keycode == Input.Keys.ENTER) {
-            return false;
+        if (keycode == Input.Keys.ENTER) {
+            this.isArrowKeyDownPressed = true;
         }
         return true;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        if (keycode == Input.Keys.W) {
-            this.isKeyUpPressed = false;
-        } else if (keycode == Input.Keys.S) {
-            this.isKeyDownPressed = false;
-        }/* else if (keycode == Input.Keys.ENTER) {
+        if (keycode == Input.Keys.ENTER) {
             this.isArrowKeyDownPressed = false;
-        }*/
+        }
         return false;
     }
 
