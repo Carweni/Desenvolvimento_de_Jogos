@@ -1,27 +1,19 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class ArcherController {
+public class ArcherController{
     private Archer archer;
-    private GameInputProcessor gameInputProcessor;
+    private ArcherInputProcessor gameInputProcessor;
 
     public ArcherController(Archer archer) {
         this.archer = archer;
-        this.gameInputProcessor = new GameInputProcessor();
+        this.gameInputProcessor = new ArcherInputProcessor();
     }
 
-    public void update() {
-        if (gameInputProcessor.getKeyUpPressed()) {
-            archer.setY(archer.getY() + 10);
-        }
-
-        if (gameInputProcessor.getKeyDownPressed()) {
-            archer.setY(archer.getY() - 10);
-        }
-    }
-
-    public InputProcessor getInputProcessor() {
-        return gameInputProcessor;
+    public void draw(SpriteBatch batch) {
+        archer.draw(batch);
     }
 }

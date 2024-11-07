@@ -1,40 +1,53 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.Pool;
 
-public class Balloon{
-    private final Texture balloon;
-    private float PositionX, PositionY;
-    private boolean visible;
+public class Balloon extends Sprite implements Pool.Poolable {
+    private boolean alive;
 
-    Balloon(Texture Balloon, float PositionX, float PositionY){
-        this.balloon = Balloon;
-        this.PositionX = PositionX;
-        this.PositionY = PositionY;
-        this.visible = true;
+    Balloon(float PositionX, float PositionY, Texture Balloon){
+        super(Balloon);
+        this.setPosition(PositionX, PositionY);
+        setSize(20, 40);
+        alive = false;
     }
 
-    public Texture getTexture() {
-        return balloon;
+    public boolean isAlive() {
+        return alive;
     }
 
-    public float getPositionX() {
-        return PositionX;
+    public void init(float posX, float posY) {
+        setPosition(posX, posY);
+        alive = true;
     }
 
-    public float getPositionY() {
-        return PositionY;
+    @Override
+    public void reset() {
+        setPosition(0,0);
+        alive = false;
     }
 
-    public boolean isVisible() {
-        return visible;
+    public boolean isOutOfScreen (){
+        if((getY()> Gdx.graphics.getHeight())&&(getY()+getHeight()<0)){
+            return true;
+        }
+        if((getX()>Gdx.graphics.getWidth())&&(getX()+getWidth()<0)){
+            return true;
+        }
+        return false;
     }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public void update (SpriteBatch batch) {
+        if (this.isOutOfScreen()) {
+            alive = false;
+        } else {
+            setPosition(getX(),getY()+1);
+            this.draw(batch);
+        }
     }
 
-    public void updatePosition(){
-        PositionY += 10;
-    }
 }

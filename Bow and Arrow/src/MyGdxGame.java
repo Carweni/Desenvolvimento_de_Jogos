@@ -4,94 +4,65 @@ import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
-import java.util.ArrayList;
-import java.util.Random;
 
 public class MyGdxGame extends ApplicationAdapter {
 	SpriteBatch batch;
+	int screenHeight, screenWidth;
+	float balloonTime;
+	Texture archerTexture, balloonTexture, arrowTexture, backgroundTexture;
 	Archer archer;
-	Texture archerIdleTexture;
-	Texture archerShootingTexture;
-	Texture balloonTexture;
-	Texture arrowTexture, backgroundTexture;
 	BalloonController balloonController;
-	ArrayList<Arrow> arrows;
-	int screenHeight;
-	int screenWidth;
-	Random random;
-	boolean isShooting;
-	float shootTime;
+	ArrowController arrowController;  
 
 	@Override
 	public void create() {
 		batch = new SpriteBatch();
-		archerIdleTexture = new Texture("archerIdle.png");
-		archerShootingTexture = new Texture("archerShooting.png");
-		arrowTexture = new Texture("arrow.png");
-		balloonTexture = new Texture("balloon.png");
-		backgroundTexture = new Texture("background.png");
-		archer = new Archer(0, 0, archerIdleTexture);
 		screenHeight = Gdx.graphics.getHeight();
 		screenWidth = Gdx.graphics.getWidth();
-		balloonController = new BalloonController();
-		arrows = new ArrayList<>();
-		random = new Random();
+		balloonTime = 0;
 
-	}
+		archerTexture = new Texture("archerIdle.png");
+		balloonTexture = new Texture("balloon.png");
+		arrowTexture = new Texture("arrow.png");
+		backgroundTexture = new Texture("background.png");
 
-	public void shootArrow() {
-		// Cria uma nova flecha na posição atual do arqueiro
-		Arrow arrow = new Arrow(arrowTexture, archer.getPositionX() + 50, archer.getPositionY() + 50);
-		arrows.add(arrow);
-
-		// Troca o sprite do arqueiro para o de atirando
-		archer.setArcherTexture(archerShootingTexture);
-		isShooting = true;
-		shootTime = 0; // Reset do tempo para controlar duração da animação
+		archer = new Archer(0, 0, archerTexture);
+		balloonController = new BalloonController(archer);
+		arrowController = new ArrowController(archer);
 	}
 
 	@Override
 	public void render() {
 		ScreenUtils.clear(1, 0, 0, 1);
-
 		batch.begin();
+
 		batch.draw(backgroundTexture, 0, 0, screenWidth, screenHeight);
+		archer.update(batch);
 
-		// Atualiza e desenha o arqueiro
-		shootTime += Gdx.graphics.getDeltaTime();
-		if (isShooting && shootTime > 0.2f) { // 0.2 segundos de "atirando"
-			archer.setArcherTexture(archerIdleTexture);
-			isShooting = false;
+		// Controle de balões
+		balloonTime += Gdx.graphics.getDeltaTime();
+		if (balloonTime > 0.5) {
+			balloonController.addBalloon(balloonTexture);
+			balloonTime = 0;
+		}
+		balloonController.update(batch);
+
+		if (archer.getEnterPressed()) {
+			arrowController.addArrow(arrowTexture);
+			archer.resetEnter();
 		}
 
-		archer.draw();
-		// Atualiza e desenha cada flecha
-		for (int i = 0; i < arrows.size(); i++) {
-			Arrow arrow = arrows.get(i);
-			if (arrow.isActive()) {
-				arrow.updatePosition();
-				batch.draw(arrow.getTexture(), arrow.getPositionX(), arrow.getPositionY() - 45, 20, 50);
-
-				// Desativa a flecha se sair da tela
-				if (arrow.getPositionX() > screenWidth) {
-					arrow.deactivate();
-				}
-			}
-		}
-
-		// Remove flechas inativas da lista
-		arrows.removeIf(arrow -> !arrow.isActive());
+		arrowController.update(batch);
 
 		batch.end();
 	}
 
 	@Override
-	public void dispose () {
+	public void dispose() {
 		batch.dispose();
-		archerIdleTexture.dispose();
-		archerShootingTexture.dispose();
+		archerTexture.dispose();
 		arrowTexture.dispose();
 		balloonTexture.dispose();
+		backgroundTexture.dispose();
 	}
 }
-

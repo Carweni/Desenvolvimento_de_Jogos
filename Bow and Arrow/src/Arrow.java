@@ -1,40 +1,40 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class Arrow {
-    private final Texture arrowTexture;
-    private float positionX, positionY;
-    private boolean active;
+public class Arrow extends Sprite {
+    private float speed = 5;
+    private ArcherInputProcessor arrowInputProcessor;
 
-    public Arrow(Texture arrowTexture, float positionX, float positionY) {
-        this.arrowTexture = arrowTexture;
-        this.positionX = positionX;
-        this.positionY = positionY;
-        this.active = true;
+    public Arrow(float positionX, float positionY, Texture arrowTexture, Archer archer) {
+        super(arrowTexture);
+        this.setPosition(positionX, positionY);
+        this.setSize(30, 50);
+        this.arrowInputProcessor = (ArcherInputProcessor) archer.getInputProcessor();
     }
 
-    public void updatePosition() {
-        positionX += 10;
+    public void draw(SpriteBatch batch) {
+        super.draw(batch);
     }
 
-    public Texture getTexture() {
-        return arrowTexture;
+    public boolean isOutOfScreen (){
+        if((getY()> Gdx.graphics.getHeight())&&(getY()+getHeight()<0)){
+            return true;
+        }
+        if((getX()>Gdx.graphics.getWidth())&&(getX()+getWidth()<0)){
+            return true;
+        }
+        return false;
     }
 
-    public float getPositionX() {
-        return positionX;
+    public void update(SpriteBatch batch) {
+        if(!isOutOfScreen()) {
+            setPosition(getX() + 5,getY());
+            this.draw(batch);
+        }
     }
 
-    public float getPositionY() {
-        return positionY;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void deactivate() {
-        this.active = false;
-    }
 }

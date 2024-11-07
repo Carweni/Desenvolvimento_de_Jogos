@@ -4,11 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 
-public class GameInputProcessor implements InputProcessor {
+public class ArcherInputProcessor implements InputProcessor {
     public boolean isKeyUpPressed = false;
     public boolean isKeyDownPressed = false;
+    private boolean isArrowKeyDownPressed = false;
 
-    GameInputProcessor(){
+    ArcherInputProcessor(){
         Gdx.input.setInputProcessor(this);
     }
 
@@ -20,6 +21,14 @@ public class GameInputProcessor implements InputProcessor {
         return isKeyDownPressed;
     }
 
+    public boolean getArrowKeyDownPressed(){
+        return isArrowKeyDownPressed;
+    }
+
+    public void resetEnterPressed(){
+        this.isArrowKeyDownPressed = false;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.W) {
@@ -27,7 +36,7 @@ public class GameInputProcessor implements InputProcessor {
         } else if (keycode == Input.Keys.S) {
             this.isKeyDownPressed = true;
         } else if (keycode == Input.Keys.ENTER) {
-           // shootArrow();
+            this.isArrowKeyDownPressed = true;
         }
         return true;
     }
@@ -39,7 +48,7 @@ public class GameInputProcessor implements InputProcessor {
         } else if (keycode == Input.Keys.S) {
             this.isKeyDownPressed = false;
         } else if (keycode == Input.Keys.ENTER) {
-            // shootArrow();
+            this.isArrowKeyDownPressed = false;
         }
         return false;
     }
