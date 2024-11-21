@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -12,7 +13,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	Texture archerIdleTexture, archerShootingTexture, balloonTexture, arrowTexture, backgroundTexture;
 	Archer archer;
 	BalloonController balloonController;
-	ArrowController arrowController;
+	public static AssetManager assetManager;
 
 	@Override
 	public void create() {
@@ -21,30 +22,40 @@ public class MyGdxGame extends ApplicationAdapter {
 		screenWidth = Gdx.graphics.getWidth();
 		balloonTime = 0;
 
-		// Carregar as texturas
-		archerIdleTexture = new Texture("archerIdle.png");
-		archerShootingTexture = new Texture("archerShooting.png");
-		balloonTexture = new Texture("balloon.png");
-		arrowTexture = new Texture("arrow.png");
-		backgroundTexture = new Texture("background.png");
+		// Carregar as texturas com Asset Manager:
+		assetManager = new AssetManager();
+		assetManager.load("balloon.png", Texture.class);
+		assetManager.load("archerIdle.png", Texture.class);
+		assetManager.load("archerShooting.png", Texture.class);
+		assetManager.load("arrow.png", Texture.class);
+		assetManager.load("background.png", Texture.class);
+		assetManager.finishLoading();
+
+		archerIdleTexture = assetManager.get("archerIdle.png", Texture.class);
+		archerShootingTexture = assetManager.get("archerShooting.png", Texture.class);
 
 		archer = new Archer(0, 0, archerIdleTexture, archerShootingTexture);
+
 		balloonController = new BalloonController(archer);
-		arrowController = new ArrowController(archer);
+		ArrowController.init(archer);
 
 		InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(archer.getInputProcessor());
-		multiplexer.addProcessor(arrowController.getArrowInputProcessor());
+		multiplexer.addProcessor(ArrowController.getArrowInputProcessor());
 		Gdx.input.setInputProcessor(multiplexer);
 	}
+
 
 	@Override
 	public void render() {
 		ScreenUtils.clear(1, 0, 0, 1);
 		batch.begin();
 
+		Texture backgroundTexture = assetManager.get("background.png", Texture.class);
+		Texture arrowTexture = assetManager.get("arrow.png", Texture.class);
+
 		batch.draw(backgroundTexture, 0, 0, screenWidth, screenHeight);
-		archer.update(batch, arrowController.getArrowKeyDownPressed());
+		archer.update(batch);
 
 		// Controle de balões
 		balloonTime += Gdx.graphics.getDeltaTime();
@@ -54,12 +65,7 @@ public class MyGdxGame extends ApplicationAdapter {
 		}
 		balloonController.update(batch);
 
-		if (arrowController.getEnterPressed()) {
-			arrowController.addArrow(arrowTexture);
-			arrowController.resetEnter();    // Faz com que pare de atirar flechas continuamente enquanto Enter estiver pressionado.
-		}
-
-		arrowController.update(batch);
+		ArrowController.draw(batch, arrowTexture);
 
 		batch.end();
 	}
@@ -67,10 +73,6 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void dispose() {
 		batch.dispose();
-		archerIdleTexture.dispose();
-		archerShootingTexture.dispose();
-		arrowTexture.dispose();
-		balloonTexture.dispose();
-		backgroundTexture.dispose();
+		assetManager.dispose();
 	}
 }

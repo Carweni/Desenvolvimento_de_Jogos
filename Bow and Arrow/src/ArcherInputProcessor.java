@@ -21,14 +21,6 @@ public class ArcherInputProcessor implements InputProcessor {
         return isKeyDownPressed;
     }
 
-    /*public boolean getArrowKeyDownPressed(){
-        return isArrowKeyDownPressed;
-    }
-
-    public void resetEnterPressed(){
-        this.isArrowKeyDownPressed = false;
-    }*/
-
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.W) {

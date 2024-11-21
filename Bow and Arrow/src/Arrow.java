@@ -6,18 +6,22 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Arrow extends Sprite {
-    private float speed = 5;
-    private ArcherInputProcessor arrowInputProcessor;   // Separar e arrumar com o Input Multiplexer.
+    public boolean alive;
 
-    public Arrow(float positionX, float positionY, Texture arrowTexture, Archer archer) {
-        super(arrowTexture);
+    public Arrow(float positionX, float positionY, Archer archer) {
+        super((Texture) MyGdxGame.assetManager.get("arrow.png"));
         this.setPosition(positionX, positionY);
         this.setSize(30, 50);
-        this.arrowInputProcessor = archer.getInputProcessor();
+        this.alive = false;
     }
 
     public void draw(SpriteBatch batch) {
         super.draw(batch);
+    }
+
+    public void arrowInit (float posX, float posY){
+        this.setPosition(posX, posY);
+        this.alive = true;
     }
 
     public boolean isOutOfScreen (){
@@ -30,9 +34,9 @@ public class Arrow extends Sprite {
         return false;
     }
 
-    public void update(SpriteBatch batch) {
+    public void updateArrow(SpriteBatch batch) {
         if(!isOutOfScreen()) {
-            setPosition(getX() + 5,getY());
+            setPosition(getX() + 5, getY());
             this.draw(batch);
         }
     }

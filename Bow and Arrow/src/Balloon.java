@@ -10,7 +10,7 @@ public class Balloon extends Sprite implements Pool.Poolable {
     private boolean alive;
 
     Balloon(float PositionX, float PositionY, Texture Balloon){
-        super(Balloon);
+        super((Texture)MyGdxGame.assetManager.get("balloon.png"));
         this.setPosition(PositionX, PositionY);
         setSize(30, 60);
         alive = false;

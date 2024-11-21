@@ -1,50 +1,92 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import java.util.ArrayList;
-import java.util.Random;
 
-public class ArrowController{
-    private final ArrayList<Arrow> activeArrows;
-    private final Archer archer;
-    private final ArrowInputProcessor arrowInputProcessor;
+public abstract class ArrowController {
+    private static ArrayList<Arrow> activeArrows;
+    private static ArrayList<Arrow> deadArrows;
+    private static Archer archer;
+    private static ArrowInputProcessor arrowInputProcessor;
 
-    public ArrowController(Archer archer) {
-        this.activeArrows = new ArrayList<>();
-        this.archer = archer;
-        this. arrowInputProcessor = new ArrowInputProcessor();
+    public static void init(Archer archer1) {
+        activeArrows = new ArrayList<>();
+        deadArrows = new ArrayList<>();
+        archer = archer1;
+        arrowInputProcessor = new ArrowInputProcessor();
     }
 
     public void addArrow(Texture arrowTexture) {
-        int screenWidth = Gdx.graphics.getWidth();
         float archerX = archer.getX();
-        activeArrows.add(new Arrow(archer.getX() + archer.getWidth() / 2, archer.getY() + 5, arrowTexture, archer));
+        Arrow currentArrow;
+
+        if (!deadArrows.isEmpty()) {
+            currentArrow = deadArrows.remove(deadArrows.size() - 1);
+        } else {
+            currentArrow = new Arrow(
+                    archerX + archer.getWidth() / 2,
+                    archer.getY() + 5,
+                    archer
+            );
+        }
+        activeArrows.add(currentArrow);
     }
 
-    public boolean getArrowKeyDownPressed(){
+    public static void draw(SpriteBatch batch, Texture arrowTexture) {
+        handleArrowCreation(arrowTexture);
+
+        for (Arrow a : activeArrows) {
+            a.draw(batch);
+            a.updateArrow(batch);
+
+            if (a.isOutOfScreen()) {
+                activeArrows.remove(a);
+                deadArrows.add(a);
+            }
+        }
+    }
+
+    private static void handleArrowCreation(Texture arrowTexture) {
+        if (arrowInputProcessor.getEnterPressed()) {
+            float archerX = archer.getX();
+            Arrow currentArrow;
+
+            if (!deadArrows.isEmpty()) {
+                currentArrow = deadArrows.remove(deadArrows.size() - 1); 
+            } else {
+                currentArrow = new Arrow(
+                        archerX + archer.getWidth() / 2,
+                        archer.getY() + 5,
+                        archer
+                );
+            }
+            activeArrows.add(currentArrow);
+
+            arrowInputProcessor.resetEnterPressed();
+        }
+    }
+
+    public static boolean getArrowKeyDownPressed() {
         return arrowInputProcessor.getEnterPressed();
     }
 
     public void update(SpriteBatch batch) {
         for (Arrow arrow : activeArrows) {
-            arrow.update(batch);
+            arrow.updateArrow(batch);
         }
     }
 
-    public boolean getEnterPressed(){
+    public boolean getEnterPressed() {
         return arrowInputProcessor.getEnterPressed();
     }
 
-    public void resetEnter(){
+    public void resetEnter() {
         arrowInputProcessor.resetEnterPressed();
     }
 
-    public ArrowInputProcessor getArrowInputProcessor() {
+    public static ArrowInputProcessor getArrowInputProcessor() {
         return arrowInputProcessor;
     }
-
 }
-

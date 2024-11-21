@@ -1,7 +1,6 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +13,7 @@ public class Archer extends Sprite {
     private float shootingTimer;  // Adiciona o temporizador
 
     public Archer(float positionX, float positionY, Texture archerIdleTexture, Texture archerShootingTexture) {
-        super(archerIdleTexture);
+        super((Texture) MyGdxGame.assetManager.get("archerIdle.png"));
         this.gameInputProcessor = new ArcherInputProcessor();
         this.setPosition(positionX, positionY);
         this.setSize(100, 100);
@@ -33,8 +32,8 @@ public class Archer extends Sprite {
         super.draw(batch);
     }
 
-    public void update(SpriteBatch batch, boolean isArrowKeyDownPressed) {
-        if (isArrowKeyDownPressed && !isShooting) {
+    public void update(SpriteBatch batch) {
+        if (ArrowController.getArrowKeyDownPressed() && !isShooting) {
             this.setTexture(archerShootingTexture);
             isShooting = true;
             shootingTimer = 0.2f;
