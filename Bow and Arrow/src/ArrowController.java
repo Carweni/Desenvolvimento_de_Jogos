@@ -1,41 +1,24 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import java.util.ArrayList;
-
+// Padrão abstract:
 public abstract class ArrowController {
-    private static ArrayList<Arrow> activeArrows;
-    private static ArrayList<Arrow> deadArrows;
+    public static ConcurrentLinkedQueue<Arrow> activeArrows;
+    private static ConcurrentLinkedQueue<Arrow> deadArrows;
     private static Archer archer;
     private static ArrowInputProcessor arrowInputProcessor;
 
     public static void init(Archer archer1) {
-        activeArrows = new ArrayList<>();
-        deadArrows = new ArrayList<>();
+        activeArrows = new ConcurrentLinkedQueue<>();
+        deadArrows = new ConcurrentLinkedQueue<>();
         archer = archer1;
         arrowInputProcessor = new ArrowInputProcessor();
     }
 
-    public void addArrow(Texture arrowTexture) {
-        float archerX = archer.getX();
-        Arrow currentArrow;
-
-        if (!deadArrows.isEmpty()) {
-            currentArrow = deadArrows.remove(deadArrows.size() - 1);
-        } else {
-            currentArrow = new Arrow(
-                    archerX + archer.getWidth() / 2,
-                    archer.getY() + 5,
-                    archer
-            );
-        }
-        activeArrows.add(currentArrow);
-    }
-
-    public static void draw(SpriteBatch batch, Texture arrowTexture) {
-        handleArrowCreation(arrowTexture);
+    public static void draw(SpriteBatch batch) {
+        handleArrowCreation();
 
         for (Arrow a : activeArrows) {
             a.draw(batch);
@@ -48,18 +31,21 @@ public abstract class ArrowController {
         }
     }
 
-    private static void handleArrowCreation(Texture arrowTexture) {
+    private static void handleArrowCreation() {
         if (arrowInputProcessor.getEnterPressed()) {
             float archerX = archer.getX();
             Arrow currentArrow;
 
             if (!deadArrows.isEmpty()) {
-                currentArrow = deadArrows.remove(deadArrows.size() - 1); 
+                currentArrow = deadArrows.remove();
+                currentArrow.setPosition(
+                        archerX + archer.getWidth() / 2,
+                        archer.getY() + 5
+                );
             } else {
                 currentArrow = new Arrow(
                         archerX + archer.getWidth() / 2,
-                        archer.getY() + 5,
-                        archer
+                        archer.getY() + 5
                 );
             }
             activeArrows.add(currentArrow);
@@ -70,20 +56,6 @@ public abstract class ArrowController {
 
     public static boolean getArrowKeyDownPressed() {
         return arrowInputProcessor.getEnterPressed();
-    }
-
-    public void update(SpriteBatch batch) {
-        for (Arrow arrow : activeArrows) {
-            arrow.updateArrow(batch);
-        }
-    }
-
-    public boolean getEnterPressed() {
-        return arrowInputProcessor.getEnterPressed();
-    }
-
-    public void resetEnter() {
-        arrowInputProcessor.resetEnterPressed();
     }
 
     public static ArrowInputProcessor getArrowInputProcessor() {

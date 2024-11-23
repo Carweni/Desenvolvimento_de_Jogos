@@ -5,12 +5,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+// Padrão singleton (sem Controller):
 public class Archer extends Sprite {
     private final ArcherInputProcessor gameInputProcessor;
-    private Texture archerIdleTexture;
-    private Texture archerShootingTexture;
+    private final Texture archerIdleTexture;
+    private final Texture archerShootingTexture;
     private boolean isShooting;
-    private float shootingTimer;  // Adiciona o temporizador
+    private float shootingTimer;
 
     public Archer(float positionX, float positionY, Texture archerIdleTexture, Texture archerShootingTexture) {
         super((Texture) MyGdxGame.assetManager.get("archerIdle.png"));
@@ -21,11 +22,6 @@ public class Archer extends Sprite {
         this.archerShootingTexture = archerShootingTexture;
         this.isShooting = false;
         this.shootingTimer = 0;  // Inicializa o temporizador
-    }
-
-    public void setArcherTextures(Texture archerIdle, Texture archerShooting) {
-        this.archerIdleTexture = archerIdle;
-        this.archerShootingTexture = archerShooting;
     }
 
     public void draw(SpriteBatch batch) {

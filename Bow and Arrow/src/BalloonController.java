@@ -1,33 +1,55 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class BalloonController {
-    private final ArrayList<Balloon> activeBalloons;
-    private final Random random;
-    private final Archer archer;
+// Padrão abstract:
+public abstract class BalloonController {
+    private static ConcurrentLinkedQueue<Balloon> activeBalloons;
+    private static ConcurrentLinkedQueue<Balloon> deadBalloons;
 
-    public BalloonController(Archer archer) {
-        this.activeBalloons = new ArrayList<>();
-        this.random = new Random();
-        this.archer = archer;
+    public static void init() {
+        activeBalloons = new ConcurrentLinkedQueue<>();
+        deadBalloons = new ConcurrentLinkedQueue<>();
+        Random random = new Random();
+        int randomX = random.nextInt(Gdx.graphics.getWidth()) + 100;
+        Balloon b = new Balloon(randomX, 0);
+        activeBalloons.add(b);
     }
 
-    public void addBalloon(Texture balloonTexture) {
-        int screenWidth = Gdx.graphics.getWidth();
-        float archerX = archer.getX();
-        int randomX = random.nextInt(screenWidth - (int) archerX - 100) + 100;
-
-        activeBalloons.add(new Balloon(randomX, -40, balloonTexture));
+    public static void set(float x, float y) {
+        Balloon b;
+        if (!deadBalloons.isEmpty()) {
+            b = deadBalloons.remove();
+            b.returnToFullTexture();
+        } else {
+            b = new Balloon(x, y);
+        }
+        activeBalloons.add(b);
+        b.setX(x);
+        b.setY(y);
     }
 
-    public void update(SpriteBatch batch) {
-        for (Balloon balloon : activeBalloons) {
-            balloon.update(batch);
+    public static void draw(SpriteBatch batch) {
+        for (Balloon b : activeBalloons) {
+            b.draw(batch);
+        }
+    }
+
+    public static void update() {
+        float deltaTime = Gdx.graphics.getDeltaTime();
+
+        for (Balloon b : activeBalloons) {
+            b.update();
+
+            if (b.isOutOfScreen() || b.isReadyForRemoval(deltaTime)) {
+                activeBalloons.remove(b);
+                deadBalloons.add(b);
+            }
+
+            b.hasCollided();
         }
     }
 }
