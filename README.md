@@ -61,3 +61,7 @@ Jogo de mineração com nave, inspirado em *Wall World*, onde o jogador explora 
 - `W` / `S` / `D` / `A`: Mover nave
 - Botão esquerdo do mouse: Disparar laser
 - N: Trocar de mapa
+
+## Autoras:
+- **Caroline Morelli da Silveira**: Bow and Arrow e Wall World
+- **Júlia Salvi Gonçalves**: Wall World
